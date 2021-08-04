@@ -1,7 +1,7 @@
 # TJwangda.github.io
 个人资料
 
-https://tjwangda.github.io/fireworks/index.html
+[fireworks](https://tjwangda.github.io/fireworks/index.html)
 
 https://tjwangda.github.io/heart/index.html
 
