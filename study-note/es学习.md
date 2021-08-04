@@ -509,7 +509,107 @@ total 11884
 
 
 
+# es数据迁移
 
+## 一、elasticdump  小数据量迁移
+
+### 迁移单个索引
+
+~~~shell
+
+elasticdump --input=http://172.16.0.39:9200/companydatabase --output=http://172.16.0.20:9200/companydatabase --type=settings
+
+elasticdump --input=http://172.16.0.39:9200/companydatabase --output=http://172.16.0.20:9200/companydatabase --type=mapping
+
+elasticdump --input=http://172.16.0.39:9200/companydatabase --output=http://172.16.0.20:9200/companydatabase --type=data
+~~~
+
+### 示例
+
+~~~shell
+# 备份
+elasticdump --input=http://192.168.1.2:9200/test --output=/opt/esdump/test.json
+# 支持星号匹配,以test开头的所有索引数据导出到test.json文件
+elasticdump --input=http://192.168.1.2:9200/test* --output=/opt/esdump/test.json
+# 还原
+./elasticdump --input=/opt/esdump/test.json --output=http://192.168.1.3:9200/test
+ 
+# 还原，不需要指定索引自动插入
+./elasticdump --input=/opt/esdump/test.json --output=http://192.168.1.3:9200
+# 迁移
+./elasticdump --input=http://192.168.1.2:9200/test --output=http:/192.168.1.3:9200/test
+ 
+# 带账号密码的数据迁移
+./elasticdump --input=http://username:password@192.168.1.2:9200/test --output=http://username@password@192.168.1.3:9200/test
+ 
+# 导出Mapping信息  
+./elasticdump --ignore-errors=true  --scrollTime=120m  --bulk=true --input=http://10.10.20.164:9200/xmonitor-2015.04.29   --output=http://192.168.100.72:9200/xmonitor-prd-2015.04.29  --type=mapping
+ 
+# 根据查询条件导出
+nohup elasticdump --ignore-errors=true  --scrollTime=120m  --bulk=true --input=http://elastic:elastic@127.0.0.1:9200/article  --output=bakarticle2.json --type=data --size=5 --searchBody '{"query":{"match_all":{}}}' 
+~~~
+
+### 
+
+~~~shell
+
+~~~
+
+# 备忘录
+
+## 自定义关键词
+
+1. 进⼊到 $ES_HOME/plugins/ik/config ⽬录下，创建 custom ⽬录，在⽬录下创建
+
+   mydic.dic 、 ext_stopword.dic ⽂件。
+
+   ~~~shell
+   vim mydic.dic
+   # 关键词
+   xxx
+   xxxx
+   ~~~
+
+   
+
+2. 最后修改 $ES_HOME/plugins/ik/config/IKAnalyzer.cfg.xml ⽂件，内容如下：
+
+   ~~~shell
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+   <properties>
+    <comment>IK Analyzer 扩展配置</comment>
+    <!--⽤户可以在这⾥配置⾃⼰的扩展字典 -->
+    <entry key="ext_dict">custom/mydic.dic</entry>
+    <!--⽤户可以在这⾥配置⾃⼰的扩展停⽌词字典-->
+    <entry key="ext_stopwords">custom/ext_stopword.dic</entry>
+    <!--⽤户可以在这⾥配置远程扩展字典 -->
+    <!-- <entry key="remote_ext_dict">words_location</entry> -->
+    <!--⽤户可以在这⾥配置远程扩展停⽌词字典-->
+    <!-- <entry key="remote_ext_stopwords">words_location</entry> -->
+   </properties>
+   ~~~
+
+   
+
+3. 重启es 。bin/elasticsearch -d
+
+4. 重建需要此关键词的索引
+
+~~~shell
+
+POST weibo/_update_by_query?conflicts=proceed
+或者
+POST _reindex
+{
+  "source": {
+    "index": "my_index"
+  },
+  "dest": {
+    "index": "my_new_index"				//把文档从my_index索引复制到my_new_index索引:
+  }
+}
+~~~
 
 
 
