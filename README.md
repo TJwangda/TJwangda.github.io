@@ -1,5 +1,5 @@
 # TJwangda.github.io
-个人资料
+[个人资料](https://tjwangda.github.io/study-note)
 
 [fireworks](https://tjwangda.github.io/fireworks/index.html)
 
