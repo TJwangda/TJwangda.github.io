@@ -290,6 +290,20 @@ GET /my_index/my_type/_search
 
 ~~~
 
+### 批量修改
+
+~~~shell
+POST /index/_update_by_query
+{
+    "query": {
+      "match_all": {}
+    },
+    "script": {
+        "inline": "ctx._source['field'] = 'value'"
+    }
+}
+~~~
+
 
 
 # 常见报错
@@ -506,6 +520,28 @@ total 11884
 
 # 重启es
 ~~~
+
+### （三）请求子句过多报错
+
+#### 报错示例
+
+~~~shell
+如果bool查询的查询条件过多会导致
+TooManyClauses问题：
+caused_by":{"type":"too_many_clauses","reason":"maxClauseCount is set to 1024"
+~~~
+
+#### 解决方案
+
+~~~shell
+解决方式在配置文件 Elasticsearch.yml中配置
+indices.query.bool.max_clause_count: 10240
+设置最大限制bool查询的条数。过多会导致性能比较慢。
+~~~
+
+
+
+
 
 
 
